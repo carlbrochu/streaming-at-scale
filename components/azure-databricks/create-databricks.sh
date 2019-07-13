@@ -3,8 +3,9 @@
 # Strict mode, fail on any error
 set -euo pipefail
 
-echo 'getting EH primary connection string'
-EVENTHUB_CS=$(az eventhubs namespace authorization-rule keys list -g $RESOURCE_GROUP --namespace-name $EVENTHUB_NAMESPACE --name RootManageSharedAccessKey --query "primaryConnectionString" -o tsv)
+if [[ -n "${DATABRICKS_HOST:-}" && -n "${DATABRICKS_TOKEN:-}" ]]; then
+  echo 'Not creating Databricks workspace. Using environment DATABRICKS_HOST and DATABRICKS_TOKEN settings'
+else
 
 echo 'creating databricks workspace'
 echo ". name: $ADB_WORKSPACE"
@@ -74,6 +75,8 @@ fi
 # Databricks CLI automatically picks up configuration from these two environment variables.
 export DATABRICKS_HOST=$(jq -r '"https://" + .location + ".azuredatabricks.net"' <<<"$databricks_metainfo")
 export DATABRICKS_TOKEN="$pat_token"
+
+fi
 
 echo 'checking Databricks secrets scope exists'
 declare SECRETS_SCOPE=$(databricks secrets list-scopes --output JSON | jq -e ".scopes[]? | select (.name == \"MAIN\") | .name") &>/dev/null
