@@ -11,9 +11,15 @@ on_error() {
 
 trap 'on_error $LINENO' ERR
 
+export PREFIX=''
+export LOCATION="eastus"
+export TESTTYPE="1"
+export SQL_TABLE_KIND="rowstore"
+export STEPS="CIDPTMV"
+
 usage() { 
     echo "Usage: $0 -d <deployment-name> [-s <steps>] [-t <test-type>] [-k <store-kind>] [-l <location>]"
-    echo "-s: specify which steps should be executed. Default=CIDPT"
+    echo "-s: specify which steps should be executed. Default=$STEPS"
     echo "    Possibile values:"
     echo "      C=COMMON"
     echo "      I=INGESTION"
@@ -21,17 +27,12 @@ usage() {
     echo "      P=PROCESSING"
     echo "      T=TEST clients"
     echo "      M=METRICS reporting"
-    echo "-t: test 1,5,10 thousands msgs/sec. Default=1"
-    echo "-k: test rowstore, columnstore, rowstore-inmemory, columnstore-inmemory. Default=rowstore"
-    echo "-l: where to create the resources. Default=eastus"
+    echo "      V=VERIFY deployment"
+    echo "-t: test 1,5,10 thousands msgs/sec. Default=$TESTTYPE"
+    echo "-k: test rowstore, columnstore, rowstore-inmemory, columnstore-inmemory. Default=$SQL_TABLE_KIND"
+    echo "-l: where to create the resources. Default=$LOCATION"
     exit 1; 
 }
-
-export PREFIX=''
-export LOCATION=''
-export TESTTYPE=''
-export STEPS=''
-export SQL_TABLE_KIND=''
 
 # Initialize parameters specified from command line
 while getopts ":d:s:t:l:k:" arg; do
@@ -48,7 +49,7 @@ while getopts ":d:s:t:l:k:" arg; do
 		l)
 			LOCATION=${OPTARG}
 			;;
-        k)
+                k)
 			SQL_TABLE_KIND=${OPTARG}
 			;;
 		esac
@@ -58,22 +59,6 @@ shift $((OPTIND-1))
 if [[ -z "$PREFIX" ]]; then
 	echo "Enter a name for this deployment."
 	usage
-fi
-
-if [[ -z "$LOCATION" ]]; then
-	export LOCATION="eastus"
-fi
-
-if [[ -z "$TESTTYPE" ]]; then
-	export TESTTYPE="1"
-fi
-
-if [[ -z "$SQL_TABLE_KIND" ]]; then
-	export SQL_TABLE_KIND="rowstore"
-fi
-
-if [[ -z "$STEPS" ]]; then
-	export STEPS="CIDPTM"
 fi
 
 # 10000 messages/sec
@@ -234,5 +219,14 @@ echo "***** [M] Starting METRICS reporting"
         source ../components/azure-event-hubs/report-throughput.sh
     fi
 echo
+
+echo "***** [V] Starting deployment VERIFICATION"
+
+    RUN=`echo $STEPS | grep V -o || true`
+    if [ ! -z $RUN ]; then
+        source ../components/azure-sql-database/run-assertions.sh
+    fi
+echo
+
 
 echo "***** Done"
