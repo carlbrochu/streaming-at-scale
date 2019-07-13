@@ -109,31 +109,9 @@ rm -f log.txt
 
 echo "Checking pre-requisites..."
 
-HAS_AZ=$(command -v az || true)
-if [ -z "$HAS_AZ" ]; then
-    echo "AZ CLI not found"
-    echo "please install it as described here:"
-    echo "https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest"
-    exit 1
-fi
-
-HAS_JQ=$(command -v jq || true)
-if [ -z "$HAS_JQ" ]; then
-    echo "jq not found"
-    echo "please install it using your package manager, for example, on Ubuntu:"
-    echo "  sudo apt install jq"
-    echo "or as described here:"
-    echo "  https://stedolan.github.io/jq/download/"
-    exit 1
-fi
-
-HAS_DATABRICKSCLI=$(command -v databricks || true)
-if [ -z "$HAS_DATABRICKSCLI" ]; then
-    echo "databricks-cli not found"
-    echo "please install it as described here:"
-    echo "https://github.com/databricks/databricks-cli"
-    exit 1
-fi
+source ../assert/has-local-az.sh
+source ../assert/has-local-jq.sh
+source ../assert/has-local-databrickscli.sh
 
 AZ_SUBSCRIPTION_NAME=$(az account show --query name -o tsv || true)
 if [ -z "$AZ_SUBSCRIPTION_NAME" ]; then
