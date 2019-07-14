@@ -16,6 +16,11 @@ cluster_jq_command="$(cat <<JQ
 JQ
 )"
 
+if [ -n "${DATABRICKS_CLUSTER:-}" ]; then
+  echo "Using existing cluster $DATABRICKS_CLUSTER (use for development only!)"
+  cluster_jq_command="$cluster_jq_command | del(.new_cluster) | .existing_cluster_id = \"$DATABRICKS_CLUSTER\""
+fi
+
 echo "starting Databricks notebook job for $notebook_name" | tee -a log.txt
 
 job_def=$(cat ../streaming/databricks/job/job-config.json | jq "$cluster_jq_command" | jq "$job_jq_command")

@@ -3,6 +3,9 @@
 # Strict mode, fail on any error
 set -euo pipefail
 
+echo 'getting shared access key'
+EVENTHUB_CS=$(az eventhubs namespace authorization-rule keys list -g $RESOURCE_GROUP --namespace-name $EVENTHUB_NAMESPACE --name Listen --query "primaryConnectionString" -o tsv)
+
 echo "getting Data Lake Storage Gen2 key"
 STORAGE_GEN2_KEY=$(az storage account keys list -n $AZURE_STORAGE_ACCOUNT_GEN2 -g $RESOURCE_GROUP --query '[?keyName==`key1`].value' -o tsv)
 

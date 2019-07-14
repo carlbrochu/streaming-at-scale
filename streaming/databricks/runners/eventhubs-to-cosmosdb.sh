@@ -3,6 +3,9 @@
 # Strict mode, fail on any error
 set -euo pipefail
 
+echo 'getting shared access key'
+EVENTHUB_CS=$(az eventhubs namespace authorization-rule keys list -g $RESOURCE_GROUP --namespace-name $EVENTHUB_NAMESPACE --name Listen --query "primaryConnectionString" -o tsv)
+
 echo "getting cosmosdb master key"
 COSMOSDB_MASTER_KEY=$(az cosmosdb keys list -g $RESOURCE_GROUP -n $COSMOSDB_SERVER_NAME --query "primaryMasterKey" -o tsv)
 
