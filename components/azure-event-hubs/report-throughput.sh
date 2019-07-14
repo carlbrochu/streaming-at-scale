@@ -9,7 +9,7 @@ eh_resource=$(az resource show -g $RESOURCE_GROUP --resource-type Microsoft.Even
 metric_names="IncomingMessages IncomingBytes OutgoingMessages OutgoingBytes ThrottledRequests"
 fmt="%28s%20s%20s%20s%20s%20s\n"
 echo "Event Hub capacity: $EVENTHUB_CAPACITY throughput units (this determines MAX VALUE below)."
-echo "Reporting aggregate metrics per minute, offset by 1 minute, for 30 minutes."
+echo "Reporting aggregate metrics per minute, offset by 1 minute, for $REPORT_THROUGHPUT_MINUTES minutes."
 printf "$fmt" "" $metric_names
 PER_MIN=60
 MB=1000000
