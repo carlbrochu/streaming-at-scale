@@ -222,6 +222,8 @@ echo
 
 echo "***** [V] Starting deployment VERIFICATION"
 
+    export SQL_EVENTS_TABLE="[dbo].[rawdata$TABLE_SUFFIX]"
+
     RUN=`echo $STEPS | grep V -o || true`
     if [ ! -z $RUN ]; then
         source ../components/azure-sql-database/run-assertions.sh

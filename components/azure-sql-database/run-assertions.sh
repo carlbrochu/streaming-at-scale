@@ -9,7 +9,7 @@ SET NOCOUNT ON;
 WITH thr AS (
   SELECT count(*)/300 AS events_per_second
     , avg(datediff(millisecond, EnqueuedAt, StoredAt)) AS latency_ms
-  FROM rawdata
+  FROM $SQL_EVENTS_TABLE
   GROUP BY datediff(second, cast(19700101 as nvarchar), StoredAt) / 300 -- 5 minute interval
 )
 SELECT max(events_per_second) AS events_per_second, min(latency_ms) AS latency_ms
