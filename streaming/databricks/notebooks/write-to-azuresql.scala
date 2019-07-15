@@ -1,4 +1,5 @@
 // Databricks notebook source
+dbutils.widgets.text("secrets-scope", "MAIN", "Secrets scope")
 dbutils.widgets.text("azuresql-servername", "servername")
 dbutils.widgets.text("azuresql-stagingtable", "[dbo].[staging_table]")
 dbutils.widgets.text("azuresql-finaltable", "[dbo].[rawdata]")
@@ -38,7 +39,7 @@ val etlStoredProc = dbutils.widgets.get("azuresql-etlstoredproc")
 val jdbcUrl = s"jdbc:sqlserver://$serverName.database.windows.net;database=streaming"
 val connectionProperties = new java.util.Properties()
 connectionProperties.put("user", "serveradmin")
-connectionProperties.put("password", dbutils.secrets.get(scope = "MAIN", key = "azuresql-pass"))
+connectionProperties.put("password", dbutils.secrets.get(scope = dbutils.widgets.get("secrets-scope"), key = "azuresql-pass"))
 connectionProperties.setProperty("Driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver")
 
 val numPartitions = retry (6, 0) {
@@ -64,7 +65,7 @@ import com.microsoft.azure.sqldb.spark.config.Config
 val bulkCopyConfig = Config(Map(
   "url"               -> s"$serverName.database.windows.net",
   "user"              -> "serveradmin",
-  "password"          -> dbutils.secrets.get(scope = "MAIN", key = "azuresql-pass"),
+  "password"          -> dbutils.secrets.get(scope = dbutils.widgets.get("secrets-scope"), key = "azuresql-pass"),
   "databaseName"      -> "streaming",
   "dbTable"           -> stagingTable,
   "bulkCopyBatchSize" -> "2500",

@@ -1,4 +1,5 @@
 // Databricks notebook source
+dbutils.widgets.text("secrets-scope", "MAIN", "Secrets scope")
 dbutils.widgets.text("storage-account", "ADLSGEN2ACCOUNTNAME", "ADLS Gen2 storage account name")
 dbutils.widgets.text("delta-table", "streaming_events", "Delta table to store events (will be dropped if it exists)")
 dbutils.widgets.text("stream-temp-table", "stream_data", "Spark global temp table to pass stream data")
@@ -13,7 +14,7 @@ val streamData = table(global_temp_db + "." + dbutils.widgets.get("stream-temp-t
 val gen2account = dbutils.widgets.get("storage-account")
 spark.conf.set(
   s"fs.azure.account.key.$gen2account.dfs.core.windows.net",
-  dbutils.secrets.get(scope = "MAIN", key = "storage-account-key"))
+  dbutils.secrets.get(scope = dbutils.widgets.get("secrets-scope"), key = "storage-account-key"))
 spark.conf.set("fs.azure.createRemoteFileSystemDuringInitialization", "true")
 dbutils.fs.ls(s"abfss://streamingatscale@$gen2account.dfs.core.windows.net/")
 spark.conf.set("fs.azure.createRemoteFileSystemDuringInitialization", "false")

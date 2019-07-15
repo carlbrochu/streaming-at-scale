@@ -1,4 +1,5 @@
 // Databricks notebook source
+dbutils.widgets.text("secrets-scope", "MAIN", "Secrets scope")
 dbutils.widgets.text("stream-temp-table", "stream_data", "Spark global temp table to pass stream data")
 dbutils.widgets.text("process-max-minutes", "5", "Max minutes timespan to process")
 dbutils.widgets.text("assert-events-per-second", "900", "Assert min events per second (computed over 1 min windows)")
@@ -7,7 +8,7 @@ dbutils.widgets.text("assert-latency-milliseconds", "1000", "Assert max latency 
 // COMMAND ----------
 
 //FIXME
-spark.conf.set("fs.azure.account.key", dbutils.secrets.get(scope = "MAIN", key = "storage-account-key"))
+spark.conf.set("fs.azure.account.key", dbutils.secrets.get(scope = dbutils.widgets.get("secrets-scope"), key = "storage-account-key"))
 
 // COMMAND ----------
 

@@ -1,4 +1,5 @@
 // Databricks notebook source
+dbutils.widgets.text("secrets-scope", "MAIN", "Secrets scope")
 dbutils.widgets.text("cosmosdb-endpoint", "https://MYACCOUNT.documents.azure.com", "Cosmos DB endpoint")
 dbutils.widgets.text("cosmosdb-database", "streaming", "Cosmos DB database")
 dbutils.widgets.text("cosmosdb-collection", "rawdata", "Cosmos DB collection")
@@ -13,7 +14,7 @@ import java.util.UUID.randomUUID
 // for the description of the available configurations.
 val cosmosDbConfig = Map(
   "Endpoint" -> dbutils.widgets.get("cosmosdb-endpoint"),
-  "Masterkey" -> dbutils.secrets.get(scope = "MAIN", key = "cosmosdb-write-master-key"),
+  "Masterkey" -> dbutils.secrets.get(scope = dbutils.widgets.get("secrets-scope"), key = "cosmosdb-write-master-key"),
   "Database" -> dbutils.widgets.get("cosmosdb-database"),
   "Collection" -> dbutils.widgets.get("cosmosdb-collection"),
   "ReadChangeFeed" -> "true",

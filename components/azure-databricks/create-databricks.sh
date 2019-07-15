@@ -82,11 +82,13 @@ export DATABRICKS_TOKEN="$pat_token"
 
 fi
 
+export DATABRICKS_SECRETS_SCOPE="$PREFIX"
+
 echo 'checking Databricks secrets scope exists'
-declare SECRETS_SCOPE=$(databricks secrets list-scopes --output JSON | jq -e ".scopes[]? | select (.name == \"MAIN\") | .name") &>/dev/null
+declare SECRETS_SCOPE=$(databricks secrets list-scopes --output JSON | jq -e ".scopes[]? | select (.name == \"$DATABRICKS_SECRETS_SCOPE\") | .name") &>/dev/null
 if [ -z "$SECRETS_SCOPE" ]; then
   echo 'creating Databricks secrets scope'
-  databricks secrets create-scope --scope "MAIN" --initial-manage-principal "users"
+  databricks secrets create-scope --scope "$DATABRICKS_SECRETS_SCOPE" --initial-manage-principal "users"
 fi
 
 echo 'importing Databricks notebooks'

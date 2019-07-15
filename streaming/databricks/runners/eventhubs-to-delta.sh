@@ -10,15 +10,16 @@ echo "getting Data Lake Storage Gen2 key"
 STORAGE_GEN2_KEY=$(az storage account keys list -n $AZURE_STORAGE_ACCOUNT_GEN2 -g $RESOURCE_GROUP --query '[?keyName==`key1`].value' -o tsv)
 
 echo 'writing Databricks secrets'
-databricks secrets put --scope "MAIN" --key "eventhub-cs-in-read" --string-value "$EVENTHUB_CS;EntityPath=$EVENTHUB_NAME"
-databricks secrets put --scope "MAIN" --key "storage-account-key" --string-value "$STORAGE_GEN2_KEY"
+databricks secrets put --scope "$DATABRICKS_SECRETS_SCOPE" --key "eventhub-cs-in-read" --string-value "$EVENTHUB_CS;EntityPath=$EVENTHUB_NAME"
+databricks secrets put --scope "$DATABRICKS_SECRETS_SCOPE" --key "storage-account-key" --string-value "$STORAGE_GEN2_KEY"
 
 checkpoints_dir=dbfs:/streaming_at_scale/checkpoints/streaming-delta
 echo "Deleting checkpoints directory $checkpoints_dir"
 databricks fs rm -r "$checkpoints_dir"
 
 ../streaming/databricks/job/run-databricks-job.sh eventhubs-to-delta false "$(cat <<JQ
-  .notebook_task.base_parameters."eventhub-secret-name" = "eventhub-cs-in-read"
+  .notebook_task.base_parameters."secrets-scope" = "$DATABRICKS_SECRETS_SCOPE"
+  | .notebook_task.base_parameters."eventhub-secret-name" = "eventhub-cs-in-read"
   | .notebook_task.base_parameters."eventhub-consumergroup" = "$EVENTHUB_CG"
   | .notebook_task.base_parameters."eventhub-maxEventsPerTrigger" = "$DATABRICKS_MAXEVENTSPERTRIGGER"
   | .notebook_task.base_parameters."storage-account" = "$AZURE_STORAGE_ACCOUNT_GEN2"
