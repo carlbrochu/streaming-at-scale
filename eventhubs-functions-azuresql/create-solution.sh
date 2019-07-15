@@ -16,12 +16,12 @@ export PREFIX=''
 export LOCATION="eastus"
 export TESTTYPE="1"
 export SQL_TABLE_KIND="rowstore"
-export STEPS="CIDPTMV"
+export STEPS="CIDPTM"
 
 usage() { 
     echo "Usage: $0 -d <deployment-name> [-s <steps>] [-t <test-type>] [-k <store-kind>] [-l <location>]"
     echo "-s: specify which steps should be executed. Default=$STEPS"
-    echo "    Possibile values:"
+    echo "    Possible values:"
     echo "      C=COMMON"
     echo "      I=INGESTION"
     echo "      D=DATABASE"
@@ -223,11 +223,15 @@ echo
 
 echo "***** [V] Starting deployment VERIFICATION"
 
-    export SQL_EVENTS_TABLE="[dbo].[rawdata$TABLE_SUFFIX]"
+    export DATABRICKS_NODETYPE=Standard_DS3_v2
+    export DATABRICKS_WORKERS=3
+    export DATABRICKS_MAXEVENTSPERTRIGGER=100000
+    export SQL_TABLE_NAME="[dbo].[rawdata$TABLE_SUFFIX]"
 
     RUN=`echo $STEPS | grep V -o || true`
     if [ ! -z "$RUN" ]; then
-        source ../components/azure-sql-database/run-assertions.sh
+        source ../components/azure-databricks/create-databricks.sh
+        source ../streaming/databricks/runners/assert-azuresql.sh
     fi
 echo
 

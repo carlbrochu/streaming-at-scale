@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Strict mode, fail on any error
 set -euo pipefail
 
 export PREFIX=''
@@ -11,16 +12,16 @@ export STREAM_ANALYTICS_JOBTYPE='simple'
 usage() { 
     echo "Usage: $0 -d <deployment-name> [-s <steps>] [-t <test-type>] [-l <location>]"
     echo "-s: specify which steps should be executed. Default=$STEPS"
-    echo "    Possibile values:"
+    echo "    Possible values:"
     echo "      C=COMMON"
     echo "      I=INGESTION"
     echo "      P=PROCESSING"
-    echo "      T=TEST clients" 
+    echo "      T=TEST clients"
     echo "      M=METRICS reporting"
     echo "      V=VERIFY deployment"
-    echo "-t: test 1,5,10 thousands msgs/sec. Default=1"
+    echo "-t: test 1,5,10 thousands msgs/sec. Default=$TESTTYPE"
     echo "-a: type of job: simple or anomalydetection. Default=simple"
-    echo "-l: where to create the resources. Default=eastus"
+    echo "-l: where to create the resources. Default=$LOCATION"
     exit 1; 
 }
 
@@ -109,7 +110,10 @@ echo ". StreamAnalytics => Name: $PROC_JOB_NAME, SU: $PROC_STREAMING_UNITS, Job 
 echo ". Locusts         => $TEST_CLIENTS"
 echo
 
-echo "***** [C] Setting up common resources"
+echo "Deployment started..."
+echo
+
+echo "***** [C] Setting up COMMON resources"
 
     export AZURE_STORAGE_ACCOUNT=$PREFIX"storage"
 

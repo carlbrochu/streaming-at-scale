@@ -12,25 +12,26 @@ on_error() {
 
 trap 'on_error $LINENO' ERR
 
+export PREFIX=''
+export LOCATION="eastus"
+export TESTTYPE="1"
+export STEPS="CIDPTM"
+
 usage() { 
     echo "Usage: $0 -d <deployment-name> [-s <steps>] [-t <test-type>] [-l <location>]"
-    echo "-s: specify which steps should be executed. Default=CIDPT"
-    echo "    Possibile values:"
+    echo "-s: specify which steps should be executed. Default=$STEPS"
+    echo "    Possible values:"
     echo "      C=COMMON"
     echo "      I=INGESTION"
     echo "      D=DATABASE"
     echo "      P=PROCESSING"
     echo "      T=TEST clients"
     echo "      M=METRICS reporting"
-    echo "-t: test 1,5,10 thousands msgs/sec. Default=1"
-    echo "-l: where to create the resources. Default=eastus"
+    echo "      V=VERIFY deployment"
+    echo "-t: test 1,5,10 thousands msgs/sec. Default=$TESTTYPE"
+    echo "-l: where to create the resources. Default=$LOCATION"
     exit 1; 
 }
-
-export PREFIX=''
-export LOCATION=''
-export TESTTYPE=''
-export STEPS=''
 
 # Initialize parameters specified from command line
 while getopts ":d:s:t:l:" arg; do
@@ -54,18 +55,6 @@ shift $((OPTIND-1))
 if [[ -z "$PREFIX" ]]; then
 	echo "Enter a name for this deployment."
 	usage
-fi
-
-if [[ -z "$LOCATION" ]]; then
-	export LOCATION="eastus"
-fi
-
-if [[ -z "$TESTTYPE" ]]; then
-	export TESTTYPE="1"
-fi
-
-if [[ -z "$STEPS" ]]; then
-	export STEPS="CIDPTM"
 fi
 
 # 10000 messages/sec
@@ -190,6 +179,19 @@ echo "***** [M] Starting METRICS reporting"
     RUN=`echo $STEPS | grep M -o || true`
     if [ ! -z "$RUN" ]; then
         source ../components/azure-event-hubs/report-throughput.sh
+    fi
+echo
+
+echo "***** [V] Starting deployment VERIFICATION"
+
+    export DATABRICKS_NODETYPE=Standard_DS3_v2
+    export DATABRICKS_WORKERS=3
+    export DATABRICKS_MAXEVENTSPERTRIGGER=100000
+
+    RUN=`echo $STEPS | grep V -o || true`
+    if [ ! -z "$RUN" ]; then
+        source ../components/azure-databricks/create-databricks.sh
+        source ../streaming/databricks/runners/assert-cosmosdb.sh
     fi
 echo
 

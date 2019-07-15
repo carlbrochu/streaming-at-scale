@@ -20,7 +20,7 @@ export STEPS="CIPTMV"
 usage() { 
     echo "Usage: $0 -d <deployment-name> [-s <steps>] [-t <test-type>] [-l <location>]"
     echo "-s: specify which steps should be executed. Default=$STEPS"
-    echo "    Possibile values:"
+    echo "    Possible values:"
     echo "      C=COMMON"
     echo "      I=INGESTION"
     echo "      P=PROCESSING"
@@ -102,7 +102,6 @@ source ../assert/has-local-az.sh
 source ../assert/has-local-jq.sh
 source ../assert/has-local-databrickscli.sh
 
-
 echo
 echo "Streaming at Scale with Azure Databricks and Delta"
 echo "=================================================="
@@ -183,6 +182,5 @@ echo "***** [V] Starting deployment VERIFICATION"
         source ../streaming/databricks/runners/assert-delta.sh
     fi
 echo
-
 
 echo "***** Done"
