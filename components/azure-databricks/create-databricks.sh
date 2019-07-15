@@ -9,7 +9,7 @@ if [[ -n "${DATABRICKS_HOST:-}" && -n "${DATABRICKS_TOKEN:-}" ]]; then
 
 else
 
-if ! az resource show -g algattikdd04 --resource-type Microsoft.Databricks/workspaces -n algattikdd04databricks -o none 2>/dev/null; then
+if ! az resource show -g $RESOURCE_GROUP --resource-type Microsoft.Databricks/workspaces -n $ADB_WORKSPACE -o none 2>/dev/null; then
 echo 'creating databricks workspace'
 echo ". name: $ADB_WORKSPACE"
 az group deployment create \

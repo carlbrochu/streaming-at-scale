@@ -124,7 +124,7 @@ echo
 echo "***** [C] Setting up COMMON resources"
 
     export AZURE_STORAGE_ACCOUNT=$PREFIX"storage"
-    export AZURE_STORAGE_ACCOUNT_GEN2=$PREFIX"storagegen2"
+    export AZURE_STORAGE_ACCOUNT_GEN2=$PREFIX"storhfs"
 
     RUN=`echo $STEPS | grep C -o || true`
     if [ ! -z "$RUN" ]; then
