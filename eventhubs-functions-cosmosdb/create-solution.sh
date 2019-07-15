@@ -28,6 +28,7 @@ usage() {
     echo "      P=PROCESSING"
     echo "      T=TEST clients"
     echo "      M=METRICS reporting"
+    echo "      V=VERIFY deployment"
     echo "-t: test 1,5,10 thousands msgs/sec. Default=$TESTTYPE"
     echo "-f: function to test. Default=$PROC_FUNCTION"
     echo "-l: where to create the resources. Default=$LOCATION"
