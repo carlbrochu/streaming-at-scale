@@ -13,7 +13,7 @@ val streamData = table(global_temp_db + "." + dbutils.widgets.get("stream-temp-t
 // COMMAND ----------
 
 val dataToWrite = streamData
-  .select($"eventId".as("EventId"), $"Type", $"DeviceId", $"CreatedAt", $"Value", $"ComplexData", $"EnqueuedAt", $"ProcessedAt", $"StoredAt", $"PartitionKey".as("PartitionId"))
+  .select('eventId.as("EventId"), 'Type, 'DeviceId, 'CreatedAt, 'Value, 'ComplexData, 'EnqueuedAt, 'ProcessedAt)
 
 // COMMAND ----------
 

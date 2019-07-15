@@ -8,7 +8,7 @@ spark.conf.set("fs.azure.account.key", dbutils.secrets.get(scope = "MAIN", key =
 
 // COMMAND ----------
 
-spark.readStream.format("delta").table(dbutils.widgets.get("delta-table")).createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
+spark.readStream.table(dbutils.widgets.get("delta-table")).createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
 
 // COMMAND ----------
 
