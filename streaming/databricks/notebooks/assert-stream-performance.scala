@@ -23,7 +23,7 @@ import java.util.UUID.randomUUID
 
 val tempTable = "tempresult_" + randomUUID().toString.replace("-","_")
 
-val a = streamData
+val streamStatistics = streamData
     .withColumn("storedAtMinute", (floor(unix_timestamp('enqueuedAt) / 60)  * 60).cast("timestamp"))
     .withColumn("latency", 'enqueuedAt.cast("double") - 'createdAt.cast("double"))
     .groupBy('storedAtMinute)
@@ -40,13 +40,13 @@ val processMaxMinutes = asOptionalDouble(dbutils.widgets.get("process-max-minute
 val assertEventsPerSecond = asOptionalDouble(dbutils.widgets.get("assert-events-per-second"))
 val assertLatencyMilliseconds = asOptionalDouble(dbutils.widgets.get("assert-latency-milliseconds"))
 
-var q:StreamingQuery = null
+var query:StreamingQuery = null
 var stop = false
 var startTime = 0L
 var assertionsPassed = false
 var numberOfMinutes = 0L
 
-q=a.writeStream
+query = streamStatistics.writeStream
 .outputMode("complete") 
 .foreachBatch { (batchDF: DataFrame, batchId: Long) =>
   if (startTime == 0) {
@@ -69,7 +69,7 @@ q=a.writeStream
   assertionsPassed = assertionsPassedInBatch
   if (assertionsPassed || stop) {
     batchDF.write.mode("overwrite").saveAsTable(tempTable)
-    q.stop
+    query.stop
   }
 }
 .start()
@@ -78,7 +78,7 @@ q=a.writeStream
 
 print("Waiting while stream collects data")
 var printedNumberOfMinutes = -1L
-while (q.isActive) {
+while (query.isActive) {
   print(".")
   if (numberOfMinutes != printedNumberOfMinutes) {
     println()
@@ -88,7 +88,7 @@ while (q.isActive) {
   Thread.sleep(1000)
 }
 println()
-assert(q.exception.isEmpty, "Exception in stream query")
+assert(query.exception.isEmpty, "Exception in stream query")
 
 // COMMAND ----------
 

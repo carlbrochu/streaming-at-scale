@@ -21,6 +21,7 @@ databricks fs rm -r "$checkpoints_dir"
   | .notebook_task.base_parameters."azuresql-servername" = "$SQL_SERVER_NAME"
   | .notebook_task.base_parameters."azuresql-finaltable" = "$SQL_TABLE_NAME"
   | .notebook_task.base_parameters."azuresql-etlstoredproc" = "$SQL_ETL_STORED_PROC"
+  | .notebook_task.base_parameters."stream-temp-table" = "eventhubs_to_azuresql_$PREFIX"
   
 JQ
 )"

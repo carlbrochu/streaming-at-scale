@@ -180,7 +180,7 @@ echo "***** [V] Starting deployment VERIFICATION"
     RUN=`echo $STEPS | grep V -o || true`
     if [ ! -z "$RUN" ]; then
         source ../components/azure-databricks/create-databricks.sh
-        source ../streaming/databricks/runners/delta-assert-performance.sh
+        source ../streaming/databricks/runners/assert-delta.sh
     fi
 echo
 

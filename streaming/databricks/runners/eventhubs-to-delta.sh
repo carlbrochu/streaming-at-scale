@@ -22,5 +22,6 @@ databricks fs rm -r "$checkpoints_dir"
   | .notebook_task.base_parameters."eventhub-maxEventsPerTrigger" = "$DATABRICKS_MAXEVENTSPERTRIGGER"
   | .notebook_task.base_parameters."storage-account" = "$AZURE_STORAGE_ACCOUNT_GEN2"
   | .notebook_task.base_parameters."delta-table" = "events_$PREFIX"
+  | .notebook_task.base_parameters."stream-temp-table" = "eventhubs_to_delta_$PREFIX"
 JQ
 )"
