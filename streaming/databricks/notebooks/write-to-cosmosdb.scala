@@ -28,7 +28,7 @@ import com.microsoft.azure.cosmosdb.spark.streaming.CosmosDBSinkProvider
 val cosmosdb = streamData
   .writeStream
   .format(classOf[CosmosDBSinkProvider].getName)
-  .option("checkpointLocation", "dbfs:/checkpoints/streaming-cosmosdb")
+  .option("checkpointLocation", "dbfs:/streaming_at_scale/checkpoints/streaming-cosmosdb")
   .outputMode("append")
   .options(cosmosDbConfig)
   .start()

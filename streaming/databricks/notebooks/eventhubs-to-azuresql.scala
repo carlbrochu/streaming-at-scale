@@ -9,7 +9,7 @@ dbutils.widgets.text("stream-temp-table", "stream_data", "Spark global temp tabl
 
 // COMMAND ----------
 
-dbutils.notebook.run("read-from-eventhubs", 60, List(
+dbutils.notebook.run("read-from-eventhubs", 0, List(
     "eventhub-consumergroup",
     "eventhub-maxEventsPerTrigger",
     "stream-temp-table"
@@ -25,7 +25,3 @@ dbutils.notebook.run("write-to-azuresql", 0, List(
     "stream-temp-table"
   ).map(t=>t->dbutils.widgets.get(t)).toMap
 )
-
-// COMMAND ----------
-
-// MAGIC %sql select * from stream_scale_events limit 10

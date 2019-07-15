@@ -96,7 +96,7 @@ var writeDataBatch : java.sql.PreparedStatement = null
 
 val WriteToSQLQuery  = dataToWrite
   .writeStream
-  .option("checkpointLocation", "dbfs:/checkpoints/streaming-to-azuresql")
+  .option("checkpointLocation", "dbfs:/streaming_at_scale/checkpoints/streaming-azuresql")
   .foreachBatch((batchDF: DataFrame, batchId: Long) => retry(6, 0) {
     
   // Load data into staging table.
