@@ -117,12 +117,6 @@ source ../assert/has-local-jq.sh
 source ../assert/has-local-python.sh
 source ../assert/has-local-databrickscli.sh
 
-AZ_SUBSCRIPTION_NAME=$(az account show --query name -o tsv || true)
-if [ -z "$AZ_SUBSCRIPTION_NAME" ]; then
-    #az account show already shows error message "Please run 'az login' to setup account."
-    exit 1
-fi
-
 echo
 echo "Streaming at Scale with Azure Databricks and CosmosDB"
 echo "====================================================="

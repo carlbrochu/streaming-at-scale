@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Strict mode, fail on any error
 set -euo pipefail
 
 on_error() {
@@ -152,11 +153,11 @@ echo
 echo "Deployment started..."
 echo
 
-echo "***** [C] setting up COMMON resources"
+echo "***** [C] Setting up COMMON resources"
 
     export AZURE_STORAGE_ACCOUNT=$PREFIX"storage"
 
-    RUN=`echo $STEPS | grep C -o || true`    
+    RUN=`echo $STEPS | grep C -o || true`
     if [ ! -z "$RUN" ]; then
         source ../components/azure-common/create-resource-group.sh
         source ../components/azure-storage/create-storage-account.sh
@@ -182,7 +183,7 @@ echo "***** [D] Setting up DATABASE"
     export SQL_ADMIN_PASS="Strong_Passw0rd!"  
 
     RUN=`echo $STEPS | grep D -o || true`
-    if [ ! -z $RUN ]; then
+    if [ ! -z "$RUN" ]; then
         source ../components/azure-sql-database/create-sql-database.sh
     fi
 echo
@@ -215,7 +216,7 @@ echo
 echo "***** [M] Starting METRICS reporting"
 
     RUN=`echo $STEPS | grep M -o || true`
-    if [ ! -z $RUN ]; then
+    if [ ! -z "$RUN" ]; then
         source ../components/azure-event-hubs/report-throughput.sh
     fi
 echo
@@ -225,10 +226,9 @@ echo "***** [V] Starting deployment VERIFICATION"
     export SQL_EVENTS_TABLE="[dbo].[rawdata$TABLE_SUFFIX]"
 
     RUN=`echo $STEPS | grep V -o || true`
-    if [ ! -z $RUN ]; then
+    if [ ! -z "$RUN" ]; then
         source ../components/azure-sql-database/run-assertions.sh
     fi
 echo
-
 
 echo "***** Done"

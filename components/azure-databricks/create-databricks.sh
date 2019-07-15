@@ -4,7 +4,9 @@
 set -euo pipefail
 
 if [[ -n "${DATABRICKS_HOST:-}" && -n "${DATABRICKS_TOKEN:-}" ]]; then
+
   echo 'Not creating Databricks workspace. Using environment DATABRICKS_HOST and DATABRICKS_TOKEN settings'
+
 else
 
 echo 'creating databricks workspace'
@@ -64,7 +66,7 @@ if [[ -z "$pat_token" ]]; then
 EOM
   
   echo 'waiting for PAT (polling every 5 secs)...'
-  while true;  do
+  while : ; do
     pat_token=$(az keyvault secret show --vault-name "$ADB_TOKEN_KEYVAULT" --name "$databricks_token_secret_name" --query value -o tsv | grep dapi || true)	
     if [ ! -z "$pat_token" ]; then break; fi
 	  sleep 5
