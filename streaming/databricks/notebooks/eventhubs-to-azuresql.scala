@@ -1,4 +1,5 @@
 // Databricks notebook source
+dbutils.widgets.text("eventhub-secret-name", "eventhub-cs-in-read", "Event Hubs connection string key name in secret scope")
 dbutils.widgets.text("eventhub-consumergroup", "azuresql")
 dbutils.widgets.text("eventhub-maxEventsPerTrigger", "1000", "Event Hubs max events per trigger")
 dbutils.widgets.text("azuresql-servername", "servername")

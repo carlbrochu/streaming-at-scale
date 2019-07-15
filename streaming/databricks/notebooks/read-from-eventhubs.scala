@@ -1,4 +1,5 @@
 // Databricks notebook source
+dbutils.widgets.text("eventhub-secret-name", "eventhub-cs-in-read", "Event Hubs connection string key name in secret scope")
 dbutils.widgets.text("eventhub-consumergroup", "delta", "Event Hubs consumer group")
 dbutils.widgets.text("eventhub-maxEventsPerTrigger", "1000", "Event Hubs max events per trigger")
 dbutils.widgets.text("stream-temp-table", "stream_data", "Spark global temp table to pass stream data")
@@ -7,7 +8,7 @@ dbutils.widgets.text("stream-temp-table", "stream_data", "Spark global temp tabl
 
 import org.apache.spark.eventhubs.{ EventHubsConf, EventPosition }
 
-val eventHubsConf = EventHubsConf(dbutils.secrets.get(scope = "MAIN", key = "event-hubs-read-connection-string"))
+val eventHubsConf = EventHubsConf(dbutils.secrets.get(scope = "MAIN", key = dbutils.widgets.get("eventhub-secret-name")))
   .setConsumerGroup(dbutils.widgets.get("eventhub-consumergroup"))
   .setStartingPosition(EventPosition.fromStartOfStream)
   .setMaxEventsPerTrigger(dbutils.widgets.get("eventhub-maxEventsPerTrigger").toLong)
