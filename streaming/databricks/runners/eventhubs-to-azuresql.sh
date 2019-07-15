@@ -16,7 +16,7 @@ databricks fs rm -r "$checkpoints_dir"
 
 ../streaming/databricks/job/run-databricks-job.sh eventhubs-to-azuresql false "$(cat <<JQ
   .libraries += [ { "maven": { "coordinates": "com.microsoft.azure:azure-sqldb-spark:1.0.2" } } ]
-  | .notebook_task.base_parameters."eventhub-consumergroup" = "$EVENTHUB_CG"
+  .notebook_task.base_parameters."eventhub-consumergroup" = "$EVENTHUB_CG"
   | .notebook_task.base_parameters."eventhub-maxEventsPerTrigger" = "$DATABRICKS_MAXEVENTSPERTRIGGER"
   | .notebook_task.base_parameters."azuresql-servername" = "$SQL_SERVER_NAME"
   | .notebook_task.base_parameters."azuresql-finaltable" = "$SQL_TABLE_NAME"

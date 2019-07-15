@@ -28,7 +28,7 @@ rm $jar_tempfile
 
 ../streaming/databricks/job/run-databricks-job.sh eventhubs-to-cosmosdb false "$(cat <<JQ
   .libraries += [{"jar": "dbfs:/mnt/streaming-at-scale/azure-cosmosdb-spark_2.4.0_2.11-1.4.0-uber.jar"}]
-  | .notebook_task.base_parameters."eventhub-consumergroup" = "$EVENTHUB_CG"
+  .notebook_task.base_parameters."eventhub-consumergroup" = "$EVENTHUB_CG"
   | .notebook_task.base_parameters."eventhub-maxEventsPerTrigger" = "$DATABRICKS_MAXEVENTSPERTRIGGER"
   | .notebook_task.base_parameters."cosmosdb-endpoint" = "https://$COSMOSDB_SERVER_NAME.documents.azure.com:443"
   | .notebook_task.base_parameters."cosmosdb-database" = "$COSMOSDB_DATABASE_NAME"

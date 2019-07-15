@@ -3,9 +3,9 @@
 set -euo pipefail
 
 export PREFIX=''
-export LOCATION='eastus'
-export TESTTYPE='1'
-export STEPS='CIPTM'
+export LOCATION="eastus"
+export TESTTYPE="1"
+export STEPS="CIPTM"
 export STREAM_ANALYTICS_JOBTYPE='simple'
 
 usage() { 
@@ -17,6 +17,7 @@ usage() {
     echo "      P=PROCESSING"
     echo "      T=TEST clients" 
     echo "      M=METRICS reporting"
+    echo "      V=VERIFY deployment"
     echo "-t: test 1,5,10 thousands msgs/sec. Default=1"
     echo "-a: type of job: simple or anomalydetection. Default=simple"
     echo "-l: where to create the resources. Default=eastus"
@@ -113,7 +114,7 @@ echo "***** [C] Setting up common resources"
     export AZURE_STORAGE_ACCOUNT=$PREFIX"storage"
 
     RUN=`echo $STEPS | grep C -o || true`
-    if [ ! -z $RUN ]; then
+    if [ ! -z "$RUN" ]; then
         source ../components/azure-common/create-resource-group.sh
         source ../components/azure-storage/create-storage-account.sh
     fi
@@ -128,7 +129,7 @@ echo "***** [I] Setting up INGESTION AND EGRESS EVENT HUBS"
     export EVENTHUB_CG="asa"
 
     RUN=`echo $STEPS | grep I -o || true`
-    if [ ! -z $RUN ]; then
+    if [ ! -z "$RUN" ]; then
         source ../components/azure-event-hubs/create-event-hub.sh
     fi
 echo
@@ -137,7 +138,7 @@ echo "***** [P] Setting up PROCESSING"
 
     export PROC_JOB_NAME=$PREFIX"streamingjob"
     RUN=`echo $STEPS | grep P -o || true`
-    if [ ! -z $RUN ]; then
+    if [ ! -z "$RUN" ]; then
         source ./create-stream-analytics.sh
     fi
 echo
@@ -145,7 +146,7 @@ echo
 echo "***** [T] Starting up TEST clients"
 
     RUN=`echo $STEPS | grep T -o || true`
-    if [ ! -z $RUN ]; then
+    if [ ! -z "$RUN" ]; then
         source ../simulator/run-event-generator.sh
     fi
 echo
@@ -153,9 +154,23 @@ echo
 echo "***** [M] Starting METRICS reporting"
 
     RUN=`echo $STEPS | grep M -o || true`
-    if [ ! -z $RUN ]; then
+    if [ ! -z "$RUN" ]; then
         source ../components/azure-event-hubs/report-throughput.sh
     fi
 echo
 
-echo "***** done"
+echo "***** [V] Starting deployment VERIFICATION"
+
+    export EVENTHUB_NAMESPACE=$EVENTHUB_NAMESPACE_OUT
+    export DATABRICKS_NODETYPE=Standard_DS3_v2
+    export DATABRICKS_WORKERS=3
+    export DATABRICKS_MAXEVENTSPERTRIGGER=100000
+
+    RUN=`echo $STEPS | grep V -o || true`
+    if [ ! -z "$RUN" ]; then
+        source ../components/azure-databricks/create-databricks.sh
+        source ../streaming/databricks/runners/assert-eventhubs.sh
+    fi
+echo
+
+echo "***** Done"

@@ -3,6 +3,12 @@
 # Strict mode, fail on any error
 set -euo pipefail
 
+echo "getting cosmosdb master key"
+COSMOSDB_MASTER_KEY=$(az cosmosdb keys list -g $RESOURCE_GROUP -n $COSMOSDB_SERVER_NAME --query "primaryMasterKey" -o tsv)
+
+echo 'writing Databricks secrets'
+databricks secrets put --scope "MAIN" --key "cosmosdb-write-master-key" --string-value "$COSMOSDB_MASTER_KEY"
+
 source ../streaming/databricks/job/run-databricks-job.sh assert-cosmosdb true "$(cat <<JQ
   .notebook_task.base_parameters."cosmosdb-endpoint" = "https://$COSMOSDB_SERVER_NAME.documents.azure.com:443"
   | .notebook_task.base_parameters."cosmosdb-database" = "$COSMOSDB_DATABASE_NAME"

@@ -8,8 +8,8 @@ dbutils.widgets.text("stream-temp-table", "stream_data", "Spark global temp tabl
 import org.apache.spark.eventhubs.{ EventHubsConf, EventPosition }
 
 val eventHubsConf = EventHubsConf(dbutils.secrets.get(scope = "MAIN", key = "event-hubs-read-connection-string"))
-  .setStartingPosition(EventPosition.fromStartOfStream)
   .setConsumerGroup(dbutils.widgets.get("eventhub-consumergroup"))
+  .setStartingPosition(EventPosition.fromStartOfStream)
   .setMaxEventsPerTrigger(dbutils.widgets.get("eventhub-maxEventsPerTrigger").toLong)
 
 val eventhubs = spark.readStream
