@@ -23,9 +23,20 @@ val cosmosDbConfig = Map(
 
 // COMMAND ----------
 
+import org.apache.spark.sql.functions._
+
+// Convert Timestamp columns to Date type for Cosmos DB compatibility
+
+var streamDataMutated = streamData
+for (c <- streamDataMutated.schema.fields filter { _.dataType.isInstanceOf[org.apache.spark.sql.types.TimestampType] } map {_.name}) { 
+  streamDataMutated = streamDataMutated.withColumn(c, date_format(col(c), "yyyy-MM-dd'T'HH:mm:ss.SSSX"))
+}
+
+// COMMAND ----------
+
 import com.microsoft.azure.cosmosdb.spark.streaming.CosmosDBSinkProvider
 
-val cosmosdb = streamData
+val cosmosdb = streamDataMutated
   .writeStream
   .format(classOf[CosmosDBSinkProvider].getName)
   .option("checkpointLocation", "dbfs:/streaming_at_scale/checkpoints/streaming-cosmosdb")
