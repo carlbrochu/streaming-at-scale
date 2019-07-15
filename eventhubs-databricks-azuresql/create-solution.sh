@@ -109,7 +109,6 @@ echo "Checking pre-requisites..."
 
 source ../assert/has-local-az.sh
 source ../assert/has-local-jq.sh
-source ../assert/has-local-python.sh
 source ../assert/has-local-databrickscli.sh
 
 declare TABLE_SUFFIX=""
