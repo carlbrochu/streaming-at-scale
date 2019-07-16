@@ -83,6 +83,7 @@ export DATABRICKS_TOKEN="$pat_token"
 fi
 
 export DATABRICKS_SECRETS_SCOPE="$PREFIX"
+export DATABRICKS_NOTEBOOKS_DIR="/Shared/streaming-at-scale/$PREFIX"
 
 echo 'checking Databricks secrets scope exists'
 declare SECRETS_SCOPE=$(databricks secrets list-scopes --output JSON | jq -e ".scopes[]? | select (.name == \"$DATABRICKS_SECRETS_SCOPE\") | .name") &>/dev/null
@@ -92,5 +93,5 @@ if [ -z "$SECRETS_SCOPE" ]; then
 fi
 
 echo 'importing Databricks notebooks'
-databricks workspace import_dir ../streaming/databricks/notebooks /Shared/streaming-at-scale --overwrite
+databricks workspace import_dir ../streaming/databricks/notebooks "$DATABRICKS_NOTEBOOKS_DIR" --overwrite
 

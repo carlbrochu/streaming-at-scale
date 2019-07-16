@@ -37,7 +37,7 @@ wait_for_run () {
 
 cluster_jq_command="$(cat <<JQ
   .name = "Streaming at scale job $notebook_name"
-  | .notebook_task.notebook_path = "/Shared/streaming-at-scale/$notebook_name"
+  | .notebook_task.notebook_path = "$DATABRICKS_NOTEBOOKS_DIR/$notebook_name"
   | .new_cluster.node_type_id = "$DATABRICKS_NODETYPE"
   | .new_cluster.num_workers = $DATABRICKS_WORKERS
 JQ
