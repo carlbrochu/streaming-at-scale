@@ -23,6 +23,7 @@ dbutils.notebook.run("read-from-eventhubs", 0, List(
 
 dbutils.notebook.run("write-to-azuresql", 0, List(
     "secrets-scope",
+    "azuresql-servername",
     "azuresql-stagingtable",
     "azuresql-finaltable",
     "azuresql-etlstoredproc",

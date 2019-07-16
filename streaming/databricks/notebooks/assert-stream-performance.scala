@@ -7,8 +7,9 @@ dbutils.widgets.text("assert-latency-milliseconds", "1000", "Assert max latency 
 
 // COMMAND ----------
 
-//FIXME
-spark.conf.set("fs.azure.account.key", dbutils.secrets.get(scope = dbutils.widgets.get("secrets-scope"), key = "storage-account-key"))
+if (dbutils.secrets.list(dbutils.widgets.get("secrets-scope")).exists { s => s.key == "storage-account-key"}) {
+  spark.conf.set("fs.azure.account.key", dbutils.secrets.get(scope = dbutils.widgets.get("secrets-scope"), key = "storage-account-key"))
+}
 
 // COMMAND ----------
 
