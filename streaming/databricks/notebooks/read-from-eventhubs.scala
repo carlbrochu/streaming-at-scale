@@ -30,16 +30,11 @@ val schema = StructType(
   StructField("type", StringType) ::
   StructField("deviceId", StringType) ::
   StructField("createdAt", TimestampType) :: Nil)
-val jsons = eventhubs
-      .select(from_json(decode($"body", "UTF-8"), schema).as("eventData"), $"*")
-      .select($"eventData.*", $"offset", $"sequenceNumber", $"publisher", $"partitionKey", $"enqueuedTime".as("enqueuedAt")) 
 
-// COMMAND ----------
-
-val transformed = jsons
-  .withColumn("processedAt", current_timestamp)
-
-transformed.createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
+eventhubs
+  .select(from_json(decode($"body", "UTF-8"), schema).as("eventData"), $"*")
+  .select($"eventData.*", $"offset", $"sequenceNumber", $"publisher", $"partitionKey", $"enqueuedTime".as("enqueuedAt")) 
+  .createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
 
 // COMMAND ----------
 

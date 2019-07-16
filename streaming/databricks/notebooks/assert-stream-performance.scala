@@ -26,8 +26,8 @@ import java.util.UUID.randomUUID
 val tempTable = "tempresult_" + randomUUID().toString.replace("-","_")
 
 val streamStatistics = streamData
-    .withColumn("storedAtMinute", (floor(unix_timestamp('enqueuedAt) / 60)  * 60).cast("timestamp"))
-    .withColumn("latency", 'enqueuedAt.cast("double") - 'createdAt.cast("double"))
+    .withColumn("storedAtMinute", (floor(unix_timestamp('storedAt) / 60)  * 60).cast("timestamp"))
+    .withColumn("latency", 'storedAt.cast("double") - 'enqueuedAt.cast("double"))
     .groupBy('storedAtMinute)
     .agg(
       (count('eventId)/60).as("events_per_second"),

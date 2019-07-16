@@ -8,7 +8,7 @@ dbutils.widgets.text("stream-temp-table", "stream_data", "Spark global temp tabl
 // COMMAND ----------
 
 val global_temp_db = spark.conf.get("spark.sql.globalTempDatabase")
-val streamData = table(global_temp_db + "." + dbutils.widgets.get("stream-temp-table"))
+var streamData = table(global_temp_db + "." + dbutils.widgets.get("stream-temp-table"))
 
 // COMMAND ----------
 
@@ -28,16 +28,26 @@ import org.apache.spark.sql.functions._
 
 // Convert Timestamp columns to Date type for Cosmos DB compatibility
 
-var streamDataMutated = streamData
-for (c <- streamDataMutated.schema.fields filter { _.dataType.isInstanceOf[org.apache.spark.sql.types.TimestampType] } map {_.name}) { 
-  streamDataMutated = streamDataMutated.withColumn(c, date_format(col(c), "yyyy-MM-dd'T'HH:mm:ss.SSSX"))
+for (c <- streamData.schema.fields filter { _.dataType.isInstanceOf[org.apache.spark.sql.types.TimestampType] } map {_.name}) { 
+  streamData = streamData.withColumn(c, date_format(col(c), "yyyy-MM-dd'T'HH:mm:ss.SSSX"))
+}
+
+// COMMAND ----------
+
+import org.apache.spark.sql.functions._
+import java.time.Instant
+import java.sql.Timestamp
+
+if (! streamData.columns.contains("processedAt")) {
+  streamData = streamData
+    .withColumn("processedAt", lit(new Timestamp(Instant.now)))
 }
 
 // COMMAND ----------
 
 import com.microsoft.azure.cosmosdb.spark.streaming.CosmosDBSinkProvider
 
-val cosmosdb = streamDataMutated
+streamData
   .writeStream
   .format(classOf[CosmosDBSinkProvider].getName)
   .option("checkpointLocation", "dbfs:/streaming_at_scale/checkpoints/streaming-cosmosdb")

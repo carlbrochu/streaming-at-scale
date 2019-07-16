@@ -7,7 +7,18 @@ dbutils.widgets.text("stream-temp-table", "stream_data", "Spark global temp tabl
 // COMMAND ----------
 
 val global_temp_db = spark.conf.get("spark.sql.globalTempDatabase")
-val streamData = table(global_temp_db + "." + dbutils.widgets.get("stream-temp-table"))
+var streamData = table(global_temp_db + "." + dbutils.widgets.get("stream-temp-table"))
+
+// COMMAND ----------
+
+import org.apache.spark.sql.functions._
+import java.time.Instant
+import java.sql.Timestamp
+
+if (! streamData.columns.contains("processedAt")) {
+  streamData = streamData
+    .withColumn("processedAt", lit(new Timestamp(Instant.now)))
+}
 
 // COMMAND ----------
 
@@ -26,7 +37,9 @@ sql("DROP TABLE IF EXISTS `" + dbutils.widgets.get("delta-table") + "`")
 // COMMAND ----------
 
 // You can also use a path instead of a table, see https://docs.azuredatabricks.net/delta/delta-streaming.html#append-mode
-streamData.writeStream
+streamData
+  .withColumn("storedAt", current_timestamp)
+  .writeStream
   .outputMode("append")
   .option("checkpointLocation", "dbfs:/streaming_at_scale/checkpoints/streaming-delta/" + dbutils.widgets.get("delta-table"))
   .format("delta")

@@ -9,12 +9,9 @@ spark.conf.set("fs.azure.account.key", dbutils.secrets.get(scope = dbutils.widge
 
 // COMMAND ----------
 
-import org.apache.spark.sql.functions._
-
 spark
   .readStream
   .table(dbutils.widgets.get("delta-table"))
-  .withColumn("processedAt", current_timestamp)
   .createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
 
 // COMMAND ----------

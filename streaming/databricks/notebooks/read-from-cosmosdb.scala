@@ -24,7 +24,6 @@ val cosmosDbConfig = Map(
 
 // COMMAND ----------
 
-import org.apache.spark.sql.functions._
 import com.microsoft.azure.cosmosdb.spark.streaming.CosmosDBSourceProvider
 
 // Start reading change feed as a stream
@@ -33,7 +32,6 @@ spark
   .format(classOf[CosmosDBSourceProvider].getName)
   .options(cosmosDbConfig)
   .load()
-  .withColumn("processedAt", current_timestamp)
   .withColumn("createdAt", 'createdAt.cast("timestamp"))
   .withColumn("enqueuedAt", 'enqueuedAt.cast("timestamp"))
   .withColumn("storedAt", '_ts.cast("timestamp"))

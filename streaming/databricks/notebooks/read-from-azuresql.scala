@@ -31,12 +31,9 @@ spark
 
 // COMMAND ----------
 
-import org.apache.spark.sql.functions._
-
 spark
   .readStream
   .table(dbutils.widgets.get("delta-temp-table"))
-  .withColumn("processedAt", current_timestamp)
   .createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
 
 // COMMAND ----------
