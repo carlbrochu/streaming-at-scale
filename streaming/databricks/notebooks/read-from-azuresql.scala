@@ -31,6 +31,8 @@ spark
 
 // COMMAND ----------
 
+import org.apache.spark.sql.functions._
+
 spark
   .readStream
   .table(dbutils.widgets.get("delta-temp-table"))

@@ -24,6 +24,7 @@ val cosmosDbConfig = Map(
 
 // COMMAND ----------
 
+import org.apache.spark.sql.functions._
 import com.microsoft.azure.cosmosdb.spark.streaming.CosmosDBSourceProvider
 
 // Start reading change feed as a stream

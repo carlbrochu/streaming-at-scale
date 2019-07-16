@@ -9,6 +9,8 @@ spark.conf.set("fs.azure.account.key", dbutils.secrets.get(scope = dbutils.widge
 
 // COMMAND ----------
 
+import org.apache.spark.sql.functions._
+
 spark
   .readStream
   .table(dbutils.widgets.get("delta-table"))
