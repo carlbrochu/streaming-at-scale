@@ -19,12 +19,24 @@ val cosmosDbConfig = Map(
   "Collection" -> dbutils.widgets.get("cosmosdb-collection"),
   "ReadChangeFeed" -> "true",
   "ChangeFeedQueryName" -> ("Streaming Query from Cosmos DB Change Feed " + randomUUID().toString),
-  "ChangeFeedStartFromTheBeginning" -> "true"
+  "ChangeFeedStartFromTheBeginning" -> "true",
+  "InferStreamSchema" -> "false"
 )
 
 // COMMAND ----------
 
 import com.microsoft.azure.cosmosdb.spark.streaming.CosmosDBSourceProvider
+import org.apache.spark.sql.types._
+import org.apache.spark.sql.functions._
+
+val schema = StructType(
+  StructField("eventId", StringType) ::
+  StructField("complexData", StructType((1 to 22).map(i => StructField(s"moreData$i", DoubleType)))) ::
+  StructField("value", StringType) ::
+  StructField("type", StringType) ::
+  StructField("deviceId", StringType) ::
+  StructField("createdAt", TimestampType) ::
+  StructField("enqueuedAt", TimestampType) :: Nil)
 
 // Start reading change feed as a stream
 spark
@@ -32,9 +44,8 @@ spark
   .format(classOf[CosmosDBSourceProvider].getName)
   .options(cosmosDbConfig)
   .load()
-  .withColumn("createdAt", 'createdAt.cast("timestamp"))
-  .withColumn("enqueuedAt", 'enqueuedAt.cast("timestamp"))
-  .withColumn("storedAt", '_ts.cast("timestamp"))
+  .select(from_json($"body", schema).as("eventData"), $"_ts".cast("long").cast("timestamp").as("storedAt"))
+  .select($"eventData.*", $"storedAt")
   .createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
 
 // COMMAND ----------

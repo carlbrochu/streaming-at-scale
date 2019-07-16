@@ -184,6 +184,8 @@ echo
 
 echo "***** [V] Starting deployment VERIFICATION"
 
+    export ADB_WORKSPACE=$PREFIX"databricks" 
+    export ADB_TOKEN_KEYVAULT=$PREFIX"kv" #NB AKV names are limited to 24 characters
     export DATABRICKS_NODETYPE=Standard_DS3_v2
     export DATABRICKS_WORKERS=3
     export DATABRICKS_MAXEVENTSPERTRIGGER=100000

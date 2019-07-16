@@ -31,9 +31,16 @@ val schema = StructType(
   StructField("deviceId", StringType) ::
   StructField("createdAt", TimestampType) :: Nil)
 
+val streamData =
 eventhubs
   .select(from_json(decode($"body", "UTF-8"), schema).as("eventData"), $"*")
-  .select($"eventData.*", $"offset", $"sequenceNumber", $"publisher", $"partitionKey", $"enqueuedTime".as("enqueuedAt")) 
+
+// When consuming from the output of eventhubs-streamanalytics-eventhubs pipeline, 'enqueuedAt' will haven been
+// set when reading from the first eventhub, and the enqueued timestamp of the second eventhub is then the 'storedAt' time
+val enqueuedTimeColumnName = if (streamData.columns.contains("enqueuedAt")) "storedAt" else "enqueuedAt"
+
+streamData
+  .select($"eventData.*", $"offset", $"sequenceNumber", $"publisher", $"partitionKey", $"enqueuedTime".as(enqueuedTimeColumnName)) 
   .createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
 
 // COMMAND ----------

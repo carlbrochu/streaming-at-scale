@@ -40,7 +40,7 @@ import java.sql.Timestamp
 
 if (! streamData.columns.contains("processedAt")) {
   streamData = streamData
-    .withColumn("processedAt", lit(new Timestamp(Instant.now)))
+    .withColumn("processedAt", lit(Timestamp.from(Instant.now)))
 }
 
 // COMMAND ----------
