@@ -1,0 +1,2 @@
+export DATABRICKS_NODETYPE=Standard_F4s
+export DATABRICKS_WORKERS=2

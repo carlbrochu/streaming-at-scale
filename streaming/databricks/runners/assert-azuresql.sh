@@ -3,6 +3,8 @@
 # Strict mode, fail on any error
 set -euo pipefail
 
+source ../streaming/databricks/runners/assert-common.sh
+
 echo 'writing Databricks secrets'
 databricks secrets put --scope "$DATABRICKS_SECRETS_SCOPE" --key "azuresql-pass" --string-value "$SQL_ADMIN_PASS"
 

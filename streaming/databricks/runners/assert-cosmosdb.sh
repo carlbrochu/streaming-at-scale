@@ -3,6 +3,8 @@
 # Strict mode, fail on any error
 set -euo pipefail
 
+source ../streaming/databricks/runners/assert-common.sh
+
 echo "getting cosmosdb master key"
 COSMOSDB_MASTER_KEY=$(az cosmosdb keys list -g $RESOURCE_GROUP -n $COSMOSDB_SERVER_NAME --query "primaryMasterKey" -o tsv)
 

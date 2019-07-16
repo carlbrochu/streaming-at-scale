@@ -3,6 +3,8 @@
 # Strict mode, fail on any error
 set -euo pipefail
 
+source ../streaming/databricks/runners/assert-common.sh
+
 echo 'getting shared access key'
 EVENTHUB_CS=$(az eventhubs namespace authorization-rule keys list -g $RESOURCE_GROUP --namespace-name $EVENTHUB_NAMESPACE_OUT --name Listen --query "primaryConnectionString" -o tsv)
 
