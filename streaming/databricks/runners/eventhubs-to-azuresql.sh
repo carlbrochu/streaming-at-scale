@@ -14,7 +14,7 @@ checkpoints_dir=dbfs:/streaming_at_scale/checkpoints/streaming-azuresql
 echo "Deleting checkpoints directory $checkpoints_dir"
 databricks fs rm -r "$checkpoints_dir"
 
-../streaming/databricks/job/run-databricks-job.sh eventhubs-to-azuresql false "$(cat <<JQ
+source ../streaming/databricks/job/run-databricks-job.sh eventhubs-to-azuresql false "$(cat <<JQ
   .libraries += [ { "maven": { "coordinates": "com.microsoft.azure:azure-sqldb-spark:1.0.2" } } ]
   | .notebook_task.base_parameters."secrets-scope" = "$DATABRICKS_SECRETS_SCOPE"
   | .notebook_task.base_parameters."eventhub-secret-name" = "eventhub-cs-in-read"

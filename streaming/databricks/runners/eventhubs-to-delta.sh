@@ -17,7 +17,7 @@ checkpoints_dir=dbfs:/streaming_at_scale/checkpoints/streaming-delta
 echo "Deleting checkpoints directory $checkpoints_dir"
 databricks fs rm -r "$checkpoints_dir"
 
-../streaming/databricks/job/run-databricks-job.sh eventhubs-to-delta false "$(cat <<JQ
+source ../streaming/databricks/job/run-databricks-job.sh eventhubs-to-delta false "$(cat <<JQ
   .notebook_task.base_parameters."secrets-scope" = "$DATABRICKS_SECRETS_SCOPE"
   | .notebook_task.base_parameters."eventhub-secret-name" = "eventhub-cs-in-read"
   | .notebook_task.base_parameters."eventhub-consumergroup" = "$EVENTHUB_CG"

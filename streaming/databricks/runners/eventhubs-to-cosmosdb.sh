@@ -26,7 +26,7 @@ curl -fsL -o "$jar_tempfile" "http://central.maven.org/maven2/com/microsoft/azur
 databricks fs cp --overwrite "$jar_tempfile" "dbfs:/mnt/streaming-at-scale/$cosmosdb_spark_jar"
 rm $jar_tempfile
 
-../streaming/databricks/job/run-databricks-job.sh eventhubs-to-cosmosdb false "$(cat <<JQ
+source ../streaming/databricks/job/run-databricks-job.sh eventhubs-to-cosmosdb false "$(cat <<JQ
   .libraries += [{"jar": "dbfs:/mnt/streaming-at-scale/azure-cosmosdb-spark_2.4.0_2.11-1.4.0-uber.jar"}]
   | .notebook_task.base_parameters."secrets-scope" = "$DATABRICKS_SECRETS_SCOPE"
   | .notebook_task.base_parameters."eventhub-secret-name" = "eventhub-cs-in-read"
