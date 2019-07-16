@@ -21,16 +21,21 @@ val dbConfig = Config(Map(
 
 // COMMAND ----------
 
-sqlContext.read.sqlDB(dbConfig).write.format("delta").mode("overwrite").saveAsTable(dbutils.widgets.get("delta-temp-table"))
+spark
+  .read
+  .sqlDB(dbConfig)
+  .write
+  .format("delta")
+  .mode("overwrite")
+  .saveAsTable(dbutils.widgets.get("delta-temp-table"))
 
 // COMMAND ----------
 
-spark.readStream
-.table(dbutils.widgets.get("delta-temp-table"))) //.createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
-
-// COMMAND ----------
-
-spark.readStream.table(dbutils.widgets.get("delta-table")).createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
+spark
+  .readStream
+  .table(dbutils.widgets.get("delta-temp-table"))
+  .withColumn("processedAt", current_timestamp)
+  .createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
 
 // COMMAND ----------
 

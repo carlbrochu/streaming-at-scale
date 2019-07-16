@@ -32,9 +32,9 @@ spark
   .format(classOf[CosmosDBSourceProvider].getName)
   .options(cosmosDbConfig)
   .load()
+  .withColumn("processedAt", current_timestamp)
   .withColumn("createdAt", 'createdAt.cast("timestamp"))
   .withColumn("enqueuedAt", 'enqueuedAt.cast("timestamp"))
-  .withColumn("processedAt", 'processedAt.cast("timestamp"))
   .withColumn("storedAt", '_ts.cast("timestamp"))
   .createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
 
