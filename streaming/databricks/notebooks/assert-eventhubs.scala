@@ -9,6 +9,7 @@ dbutils.widgets.text("stream-temp-table", "stream_data", "Spark global temp tabl
 
 dbutils.notebook.run("read-from-eventhubs", 0, List(
     "secrets-scope",
+    "eventhub-secret-name",
     "eventhub-consumergroup",
     "eventhub-maxEventsPerTrigger",
     "stream-temp-table"
