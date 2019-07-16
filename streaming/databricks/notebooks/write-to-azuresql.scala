@@ -87,6 +87,7 @@ bulkCopyMetadata.addColumnMetadata(9, "PartitionId", java.sql.Types.INTEGER, 0, 
 
 // COMMAND ----------
 
+import org.apache.spark.sql.functions._
 import com.microsoft.azure.sqldb.spark.connect._
 import java.util.UUID.randomUUID
 import org.apache.spark.sql.DataFrame
