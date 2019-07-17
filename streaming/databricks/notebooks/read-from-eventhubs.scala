@@ -29,18 +29,18 @@ val schema = StructType(
   StructField("value", StringType) ::
   StructField("type", StringType) ::
   StructField("deviceId", StringType) ::
-  StructField("createdAt", TimestampType) :: Nil)
+  StructField("createdAt", TimestampType) ::
+  StructField("enqueuedAt", TimestampType) ::
+  StructField("processedAt", TimestampType) ::
+  Nil)
 
-val streamData =
 eventhubs
   .select(from_json(decode($"body", "UTF-8"), schema).as("eventData"), $"*")
-
-// When consuming from the output of eventhubs-streamanalytics-eventhubs pipeline, 'enqueuedAt' will haven been
-// set when reading from the first eventhub, and the enqueued timestamp of the second eventhub is then the 'storedAt' time
-val enqueuedTimeColumnName = if (streamData.columns.contains("enqueuedAt")) "storedAt" else "enqueuedAt"
-
-streamData
-  .select($"eventData.*", $"offset", $"sequenceNumber", $"publisher", $"partitionKey", $"enqueuedTime".as(enqueuedTimeColumnName)) 
+  .select($"eventData.*", $"offset", $"sequenceNumber", $"publisher", $"partitionKey", $"enqueuedTime".as(enqueuedTimeColumnName))
+  // When consuming from the output of eventhubs-streamanalytics-eventhubs pipeline, 'enqueuedAt' will haven been
+  // set when reading from the first eventhub, and the enqueued timestamp of the second eventhub is then the 'storedAt' time
+  .withColumn("storedAt", when($"enqueuedAt".isNotNull, $"enqueuedTime")))
+  .withColumn("enqueuedAt", coalesce($"enqueuedAt", $"enqueuedTime"))
   .createOrReplaceGlobalTempView(dbutils.widgets.get("stream-temp-table"))
 
 // COMMAND ----------
